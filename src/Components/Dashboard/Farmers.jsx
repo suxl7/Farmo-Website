@@ -41,7 +41,7 @@ const Farmers = ({ selectedFarmer }) => {
           <div className="bg-gradient-to-r from-green-400 to-green-600 px-6 py-8 text-white">
             <div className="flex items-center space-x-4">
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-4xl">
-                👨🌾
+                <img src="/user.png" alt={farmer.name} className="w-full h-full" />
               </div>
               <div>
                 <div className="flex items-center space-x-2">

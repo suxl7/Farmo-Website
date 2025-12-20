@@ -5,11 +5,13 @@ const Navbar = ({ activeSection, setActiveSection }) => {
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: '🏠' },
-    { id: 'farmers', label: 'Farmers', icon: '👨‍🌾' },
-    { id: 'consumers', label: 'Consumers', icon: '👥' },
-    { id: 'products', label: 'Products', icon: '🌾' },
-    { id: 'userlist', label: 'Userlist', icon: '📋' },
-    { id: 'notifications', label: 'Notifications', icon: '🔔' }
+    { id: 'farmers', label: 'Farmers', iconImg: '/farmer1.png' },
+    { id: 'consumers', label: 'Consumers', iconImg: '/users.png' },
+    { id: 'products', label: 'Products', iconImg: '/crop.png' },
+    { id: 'orders', label: 'Orders', icon: '📋' },
+    { id: 'adduser', label: 'Add User', icon: '➕' },
+    { id: 'notifications', label: 'Notifications', iconImg: '/alarm.png' },
+    { id: 'profile', label: 'Profile', iconImg: '/admin.png' }
   ];
 
   return (
@@ -34,7 +36,13 @@ const Navbar = ({ activeSection, setActiveSection }) => {
                     : 'text-gray-700 hover:bg-green-50'
                 }`}
               >
-                <span className="mr-2">{item.icon}</span>
+                <span className="mr-2">
+                  {item.iconImg ? (
+                    <img src={item.iconImg} alt={item.label} className="w-5 h-5 inline-block" />
+                  ) : (
+                    item.icon
+                  )}
+                </span>
                 {item.label}
               </button>
             ))}
@@ -65,7 +73,13 @@ const Navbar = ({ activeSection, setActiveSection }) => {
                     : 'text-gray-700 hover:bg-green-50'
                 }`}
               >
-                <span className="mr-2">{item.icon}</span>
+                <span className="mr-2">
+                  {item.iconImg ? (
+                    <img src={item.iconImg} alt={item.label} className="w-5 h-5 inline-block" />
+                  ) : (
+                    item.icon
+                  )}
+                </span>
                 {item.label}
               </button>
             ))}

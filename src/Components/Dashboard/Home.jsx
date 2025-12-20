@@ -6,10 +6,9 @@ import customerIcon from '../../assets/customer1.png';
 const Home = ({ setActiveSection, setSelectedFarmer }) => {
   const farmers = [
     { id: 'F0001', name: 'Robin Dangaura', address: 'Mahendranagar-4, Kanchanpur,Sudurpaschim', verified: true, rating: 4.9 },
-    { id: 'F0002', name: 'Rohit Chaudhary', address: 'Lamki-3, Kailali, Sudurpaschim', verified: true, rating: 4.7 },
-    { id: 'F0003', name: 'Asim Kusmi', address: 'Rajipur-4, Kailali, Sudurpaschim', verified: true, rating: 4.8 },
-    { id: 'F0004', name: 'Roman Chaudhary', address: 'Tikapur-3, Kailali, Sudurpaschim', verified: false, rating: 4.5 },
-    { id: 'F0005', name: 'Sushil Chaudhary', address: 'Godawari-1, Kailali, Sudurpaschim', verified: false, rating: 4.6 }
+    { id: 'F0002', name: 'Rohit Chaudhary', address: 'Jhunga-Bauniya-9, Kailali, Sudurpaschim', verified: true, rating: 4.7 },
+    { id: 'F0004', name: 'Roman Chaudhary', address: 'Tikapur-3, Kailali, Sudurpaschim', verified: true, rating: 4.5 },
+    { id: 'F0005', name: 'Sushil Chaudhary', address: 'Godawari-1, Kailali, Sudurpaschim', verified: true, rating: 4.6 }
   ];
 
   const handleFarmerClick = (farmer) => {
@@ -52,7 +51,7 @@ const Home = ({ setActiveSection, setSelectedFarmer }) => {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">
-                      👨🌾
+                      <img src={farmerIcon} alt={farmer.name} className="w-full h-full" />
                     </div>
                     <div>
                       <div className="flex items-center space-x-1">
