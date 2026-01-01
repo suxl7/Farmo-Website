@@ -55,8 +55,28 @@ const AddUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('User Data:', formData);
-    alert('User registered successfully!');
+    
+    const newUser = {
+      ...formData,
+      id: `${formData.userType[0]}${Date.now().toString().slice(-4)}`,
+      createdAt: new Date().toISOString()
+    };
+
+    // Get existing users
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert(`${formData.userType} registered successfully!`);
+    
+    // Reset form
+    setFormData({
+      userId: '', password: '', isAdmin: 'Yes', userType: 'Farmer',
+      firstName: '', middleName: '', lastName: '', dateOfBirth: '', sex: 'Male',
+      profilePicture: null, aboutUser: '', province: '', district: '', ward: '',
+      tole: '', mobileNumber: '', secondaryMobileNumber: '', email: '',
+      whatsapp: '', facebook: ''
+    });
   };
 
   return (
@@ -92,19 +112,9 @@ const AddUser = () => {
                     required
                   />
                   </div>
-                  <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Is Admin?<span className="text-red-500">*</span></label>
-                  <select
-                    name="isAdmin"
-                    value={formData.isAdmin}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
-                  </select>
-                  </div>
+                
+                  
+                
                   <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">User Type<span className="text-red-500">*</span></label>
                   <select
@@ -116,7 +126,7 @@ const AddUser = () => {
                   >
                     <option value="Farmer">Farmer</option>
                     <option value="Consumer">Consumer</option>
-                    <option value="Admin">Admin</option>
+                    {formData.isAdmin === 'Yes' && <option value="Admin">Admin</option>}
                   </select>
                   </div>
                 </div>
@@ -189,7 +199,7 @@ const AddUser = () => {
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-transparent"
                 />
               </div>
             </div>

@@ -2,12 +2,23 @@ import { useState } from 'react';
 import Navbar from './Navbar';
 import Home from './Home';
 import Farmers from './Farmers';
+import Consumers from './Consumers';
+import Products from './Products';
+import Orders from './Orders';
+import Notifications from './Notifications';
 import Profile from './Profile';
 import AddUser from './AddUser';
 
 const Dashboard = ({ onLogout }) => {
   const [activeSection, setActiveSection] = useState('home');
   const [selectedFarmer, setSelectedFarmer] = useState(null);
+
+  const handleSetActiveSection = (section) => {
+    setActiveSection(section);
+    if (section !== 'farmers') {
+      setSelectedFarmer(null);
+    }
+  };
 
   const renderSection = () => {
     switch (activeSection) {
@@ -16,13 +27,13 @@ const Dashboard = ({ onLogout }) => {
       case 'farmers':
         return <Farmers selectedFarmer={selectedFarmer} />;
       case 'consumers':
-        return <div className="p-6"><h2 className="text-2xl font-bold">Consumers Section</h2></div>;
+        return <Consumers />;
       case 'products':
-        return <div className="p-6"><h2 className="text-2xl font-bold">Products Section</h2></div>;
+        return <Products />;
       case 'orders':
-        return <div className="p-6"><h2 className="text-2xl font-bold">Orders Section</h2></div>;
+        return <Orders />;
       case 'notifications':
-        return <div className="p-6"><h2 className="text-2xl font-bold">Notifications Section</h2></div>;
+        return <Notifications />;
       case 'profile':
         return <Profile onLogout={onLogout} />;
       case 'adduser':
@@ -34,7 +45,7 @@ const Dashboard = ({ onLogout }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar activeSection={activeSection} setActiveSection={setActiveSection} />
+      <Navbar activeSection={activeSection} setActiveSection={handleSetActiveSection} />
       {renderSection()}
     </div>
   );

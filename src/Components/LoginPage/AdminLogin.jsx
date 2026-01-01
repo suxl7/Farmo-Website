@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { authService } from '../../services';
 
 const AdminLogin = ({ onLoginSuccess }) => {
   const [identifier, setIdentifier] = useState('');
@@ -6,6 +7,15 @@ const AdminLogin = ({ onLoginSuccess }) => {
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetIdentifier, setResetIdentifier] = useState('');
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [resetStep, setResetStep] = useState(1);
+  const [resetMessage, setResetMessage] = useState('');
 
   // Default credentials
   const DEFAULT_EMAIL = 'admin@farmo.com';
@@ -69,7 +79,8 @@ const AdminLogin = ({ onLoginSuccess }) => {
       device,
       deviceModel,
       time,
-      ip: 'Local'
+      ip: 'Local',
+      showNotification: true
     };
     
     localStorage.setItem('lastLogin', JSON.stringify(loginInfo));
@@ -87,39 +98,22 @@ const AdminLogin = ({ onLoginSuccess }) => {
     e.preventDefault();
     setError('');
 
-    // Check default credentials
-    if (identifier === DEFAULT_EMAIL && password === DEFAULT_PASSWORD) {
-      // Store auth data
-      const authData = {
-        email: DEFAULT_EMAIL,
-        isAuthenticated: true,
-        loginTime: new Date().toISOString()
-      };
-      
-      if (rememberMe) {
-        localStorage.setItem('authData', JSON.stringify(authData));
-      } else {
-        sessionStorage.setItem('authData', JSON.stringify(authData));
-      }
+    const device_info = `${getDeviceModel()} ${getBrowserInfo()}`;
 
-      // Show login notification
+    try {
+      const data = await authService.login(identifier, password, true, device_info);
+      authService.saveAuthData(data, rememberMe);
       showLoginNotification();
-
-      // Request notification permission
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-      }
-
-      // Redirect to dashboard
+      if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
       if (onLoginSuccess) onLoginSuccess();
-    } else {
-      setError('Invalid email or password');
+    } catch (err) {
+      setError(authService.getErrorMessage(err.message));
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-500 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-slate-100 to-slate-400 rounded-xl  shadow-2xl p-8 w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-500 flex items-center justify-center p-4" style={{ backgroundImage: 'url(/top-view-transparent-leaf-with-copy-space.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="bg-white/20 backdrop-blur-md rounded-xl shadow-2xl p-8 w-full max-w-md border border-white/30">
         <div className="mb-8">
           <div className="mb-4 flex justify-center">
             <img src="/farmo-1.png" alt="Farmo Logo" className="h-16 w-auto object-contain" />
@@ -159,7 +153,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2"
               >
-                <img src={showPassword ? "/show.png" : "/close.png"} alt="toggle" className="w-5 h-5" />
+                <img src={showPassword ? "/show.png" : "/delete.png"} alt="toggle" className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -174,9 +168,9 @@ const AdminLogin = ({ onLoginSuccess }) => {
               />
               <span className="ml-2 text-sm text-gray-700">Remember Me</span>
             </label>
-            <a href="#" className="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+            <button type="button" onClick={() => setShowForgotPassword(true)} className="text-sm text-blue-600 hover:text-blue-800 hover:underline">
               Forgot Password?
-            </a>
+            </button>
           </div>
           
           {error && (
@@ -195,6 +189,94 @@ const AdminLogin = ({ onLoginSuccess }) => {
           </div>
         </form>
       </div>
+
+      {showForgotPassword && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-800">Reset Password</h3>
+              <button onClick={() => { setShowForgotPassword(false); setResetStep(1); setResetMessage(''); }} className="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+
+            {resetStep === 1 && (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">Enter your email or phone number to receive OTP</p>
+                <input
+                  type="text"
+                  value={resetIdentifier}
+                  onChange={(e) => setResetIdentifier(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Email or Phone"
+                />
+                {resetMessage && <p className="text-sm text-green-600">{resetMessage}</p>}
+                <button onClick={() => { setResetMessage('OTP sent to your email/phone'); setResetStep(2); }} className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                  Send OTP
+                </button>
+              </div>
+            )}
+
+            {resetStep === 2 && (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">Enter the OTP sent to {resetIdentifier}</p>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Enter OTP"
+                  maxLength="6"
+                />
+                {resetMessage && <p className={`text-sm ${resetMessage.includes('Invalid') ? 'text-red-600' : 'text-green-600'}`}>{resetMessage}</p>}
+                <button onClick={() => { if (!otp) { setResetMessage('Please enter OTP'); return; } setResetMessage('OTP verified successfully'); setResetStep(3); }} className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                  Verify OTP
+                </button>
+              </div>
+            )}
+
+            {resetStep === 3 && (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">Create your new password</p>
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg"
+                    placeholder="New Password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <img src={showNewPassword ? "/show.png" : "/delete.png"} alt="toggle" className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg"
+                    placeholder="Confirm Password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <img src={showConfirmPassword ? "/show.png" : "/delete.png"} alt="toggle" className="w-4 h-4" />
+                  </button>
+                </div>
+                {resetMessage && <p className={`text-sm ${resetMessage.includes('not match') ? 'text-red-600' : 'text-green-600'}`}>{resetMessage}</p>}
+                <button onClick={() => { if (newPassword !== confirmPassword) { setResetMessage('Passwords do not match'); return; } setResetMessage('Password reset successful!'); setTimeout(() => { setShowForgotPassword(false); setResetStep(1); setResetMessage(''); }, 2000); }} className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                  Reset Password
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -209,9 +291,15 @@ export const LoginNotification = () => {
   useEffect(() => {
     const info = localStorage.getItem('lastLogin');
     if (info) {
-      setLoginInfo(JSON.parse(info));
-      setShow(true);
-      setTimeout(() => setShow(false), 5000);
+      const loginData = JSON.parse(info);
+      if (loginData.showNotification) {
+        setLoginInfo(loginData);
+        setShow(true);
+        setTimeout(() => setShow(false), 5000);
+        // Remove flag after showing
+        delete loginData.showNotification;
+        localStorage.setItem('lastLogin', JSON.stringify(loginData));
+      }
     }
   }, []);
 

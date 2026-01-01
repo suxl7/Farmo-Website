@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import Dashboard from './Components/Dashboard/Dashboard';
+import Dashboard from './Components/Home/Dashboard';
 import AdminLogin, { LoginNotification } from './Components/LoginPage/AdminLogin';
 import ForgotPassword from './Components/LoginPage/ForgotPassword';
 

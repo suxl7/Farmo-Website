@@ -11,18 +11,18 @@ const Navbar = ({ activeSection, setActiveSection }) => {
     { id: 'orders', label: 'Orders', icon: '📋' },
     { id: 'adduser', label: 'Add User', icon: '➕' },
     { id: 'notifications', label: 'Notifications', iconImg: '/alarm.png' },
-    { id: 'profile', label: 'Profile', iconImg: '/admin.png' }
+    { id: 'profile', label: 'Profile', iconImg: '/ADM.png' }
   ];
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-gradient-to-br from-gray-400 to-gray-200 shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white text-xl">
-              🌱
+              <img src="/farmo-1.png" alt="Farmo logo" className="w-full h-full" />
             </div>
-            <h1 className="text-2xl font-bold text-green-700">Farmo</h1>
+            <h1 className="text-2xl font-bold text-white">Farmo</h1>
           </div>
 
           <div className="hidden md:flex space-x-1">
