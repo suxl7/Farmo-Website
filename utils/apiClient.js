@@ -1,13 +1,7 @@
 import { API_BASE_URL } from '../config/api';
 
-const USE_MOCK = true; // Set to false when backend is ready
-
 class ApiClient {
   async request(endpoint, options = {}) {
-    if (USE_MOCK) {
-      return this.mockRequest(endpoint, options);
-    }
-
     const token = this.getToken();
     const headers = {
       'Content-Type': 'application/json',
@@ -16,6 +10,7 @@ class ApiClient {
     };
 
     try {
+      
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
         headers,
@@ -55,13 +50,7 @@ class ApiClient {
     }
   }
 
-  mockRequest(endpoint, options) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ success: true, mock: true });
-      }, 300);
-    });
-  }
+
 }
 
 export default new ApiClient();
